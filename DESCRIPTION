@@ -1,7 +1,7 @@
 Package: proteinProfiles
 Type: Package
 Title: Protein Profiling
-Version: 0.2.0
+Version: 0.2.1
 Date: 2011-12-20
 Author: Julian Gehring
 Maintainer: Julian Gehring <julian.gehring@embl.de>

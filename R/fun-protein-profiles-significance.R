@@ -70,7 +70,8 @@ profileDistance <- function(x, index, nSample=10000,
 
   d0 <- .distance(x$data[index, ])
   d1 <- replicate(nSample, .distance(x$data[sample.int(nrow(x$data), length(index)), ]))
-
+  d1 <- d1[!is.nan(d1)]
+  
   p <- sum(d1 <= d0)/length(d1)
 
   if(plot) {
