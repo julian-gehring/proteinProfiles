@@ -38,8 +38,8 @@ geneSetCollectionAnnotation(x, geneSetCollection, column="Gene.Names")
   
   \item{column}{Column of the annotation data \sQuote{pattern} is matched
     against (default: "Protein.Names" matching against the protein
-    names for \sQuote{grepAnno}); or "Gene.Names" matching against the
-    gene names for \sQuote{geneSetAnnotation} and
+    names for \sQuote{grepAnnotation}); or "Gene.Names" matching against
+    the gene names for \sQuote{geneSetAnnotation} and
     \sQuote{geneSetCollectionAnnotation}.}
 
 }

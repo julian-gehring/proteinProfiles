@@ -5,7 +5,7 @@
 \textclass scrartcl
 \begin_preamble
 %\VignetteIndexEntry{proteinProfiles}
-%\VignettePackage{GSRI}
+%\VignettePackage{proteinProfiles}
 \end_preamble
 \use_default_options true
 \begin_modules
@@ -96,6 +96,10 @@ Julian Gehring
 Introduction
 \end_layout
 
+\begin_layout Standard
+Loading the package
+\end_layout
+
 \begin_layout Chunk
 
 <<load_package>>=
@@ -104,6 +108,35 @@ Introduction
 \begin_layout Chunk
 
 library(proteinProfiles)
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Getting help
+\end_layout
+
+\begin_layout Chunk
+
+<<getting_help, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+vignette(package="proteinProfiles")
+\end_layout
+
+\begin_layout Chunk
+
+vignette("proteinProfiles")
+\end_layout
+
+\begin_layout Chunk
+
+?profileDistance
 \end_layout
 
 \begin_layout Chunk
@@ -432,12 +465,22 @@ Based on the results of step (1) and (2), a p-value
 
 \begin_layout Chunk
 
-p1 <- profileDistance(x, index1, nSample=1000)
+z1 <- profileDistance(x, index1, nSample=1000)
 \end_layout
 
 \begin_layout Chunk
 
-@
+z1$d0
+\end_layout
+
+\begin_layout Chunk
+
+z1$p.value
+\end_layout
+
+\begin_layout Chunk
+
+@in
 \end_layout
 
 \begin_layout Chunk
@@ -447,7 +490,7 @@ p1 <- profileDistance(x, index1, nSample=1000)
 
 \begin_layout Chunk
 
-p2 <- profileDistance(x, index2, nSample=1000)
+z2 <- profileDistance(x, index2, nSample=1000)
 \end_layout
 
 \begin_layout Chunk
@@ -461,24 +504,23 @@ p2 <- profileDistance(x, index2, nSample=1000)
 
 \begin_layout Section*
 \start_of_appendix
-
 \begin_inset Newpage newpage
 \end_inset
 
 Session Info
 \end_layout
 
-\begin_layout Scrap
+\begin_layout Chunk
 
 <<sessionInfo, results=tex, echo=FALSE>>=
 \end_layout
 
-\begin_layout Scrap
+\begin_layout Chunk
 
 toLatex(sessionInfo(), locale=FALSE)
 \end_layout
 
-\begin_layout Scrap
+\begin_layout Chunk
 
 @
 \end_layout

@@ -8,14 +8,10 @@
 \title{proteinProfiles package}
 
 \description{
-  The \pkg{GSRI} package estimates the number of differentially
-  expressed genes in gene sets, utilizing the concept of the Gene Set
-  Regulation Index (GSRI).
+  Significance assessment for distance measures of time-course protein profiles
 }
 
 \details{
-
-
   The package is published under the GPL-3 license.
 }
 

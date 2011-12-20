@@ -18,7 +18,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 %\VignetteIndexEntry{proteinProfiles}
-%\VignettePackage{GSRI}
+%\VignettePackage{proteinProfiles}
 
 \makeatother
 
@@ -34,8 +34,19 @@
 
 \section{Introduction}
 
+Loading the package
+
 <<load_package>>=
 library(proteinProfiles)
+@
+
+\selectlanguage{english}%
+Getting help
+
+<<getting_help, eval=FALSE>>=
+vignette(package="proteinProfiles")
+vignette("proteinProfiles")
+?profileDistance
 @
 
 \selectlanguage{english}%
@@ -139,10 +150,12 @@ by chance with profiles having the same or a smaller distance as our
 group of interest.
 \end{enumerate}
 <<profile_1, fig=TRUE>>=
-p1 <- profileDistance(x, index1, nSample=1000)
-@
+z1 <- profileDistance(x, index1, nSample=1000)
+z1$d0
+z1$p.value
+@in
 <<profile_2, fig=TRUE>>=
-p2 <- profileDistance(x, index2, nSample=1000)
+z2 <- profileDistance(x, index2, nSample=1000)
 @
 
 
