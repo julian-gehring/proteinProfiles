@@ -83,7 +83,7 @@ profileDistance <- function(x, index, nSample=10000,
     text(d0, 1, paste(" d0 =", round(d0, 2)), adj=c(0, 0))
   }
 
-  return(list(d0=d0, d1=d1, p=p))
+  return(list(d0=d0, d1=d1, p.value=p))
 }
 
 
