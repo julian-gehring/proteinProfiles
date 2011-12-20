@@ -17,7 +17,7 @@
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
-%\VignetteIndexEntry{proteinProfiles}
+%\VignetteIndexEntry{Introduction to the proteinProfiles package}
 %\VignettePackage{proteinProfiles}
 
 \makeatother
@@ -40,7 +40,6 @@ Loading the package
 library(proteinProfiles)
 @
 
-\selectlanguage{english}%
 Getting help
 
 <<getting_help, eval=FALSE>>=
@@ -49,7 +48,6 @@ vignette("proteinProfiles")
 ?profileDistance
 @
 
-\selectlanguage{english}%
 
 \section{Importing data}
 
@@ -64,7 +62,6 @@ file <- system.file("extdata", "ips_sample.csv", package="proteinProfiles")
 x <- readProteinData(file)
 @
 
-\selectlanguage{english}%
 The resulting object \emph{x} contains both the $\log_{2}$ ratios
 of all replicates as well as the annotation associated with the proteins.
 
@@ -75,7 +72,6 @@ names(x$annotation)
 dim(x$annotation)
 @
 
-\selectlanguage{english}%
 The import step is generally only required once for a data set. We
 can save the object \emph{x} in order to be able to skip this step
 for future analyzes.
@@ -99,7 +95,6 @@ function.
 y <- filterFeatures(x, 0.3, verbose=TRUE)
 @
 
-\selectlanguage{english}%
 
 \section{Defining protein group of interest based on annotation}
 
@@ -119,7 +114,6 @@ length(index1)
 index1
 @
 
-\selectlanguage{english}%
 We can also search other columns of the annotation. Here, we search
 for all proteins associated with the term \emph{``Ribosome''} in
 the annotation taken from the KEGG database.
@@ -129,7 +123,6 @@ index2 <- grepAnnotation(x, "Ribosome", "KEGG")
 length(index2)
 @
 
-\selectlanguage{english}%
 
 \section{Computing profile distances and assessing significance}
 

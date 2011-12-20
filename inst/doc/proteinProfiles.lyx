@@ -4,7 +4,7 @@
 \begin_header
 \textclass scrartcl
 \begin_preamble
-%\VignetteIndexEntry{proteinProfiles}
+%\VignetteIndexEntry{Introduction to the proteinProfiles package}
 %\VignettePackage{proteinProfiles}
 \end_preamble
 \use_default_options true
@@ -101,17 +101,14 @@ Loading the package
 \end_layout
 
 \begin_layout Chunk
-
 <<load_package>>=
 \end_layout
 
 \begin_layout Chunk
-
 library(proteinProfiles)
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -120,27 +117,22 @@ Getting help
 \end_layout
 
 \begin_layout Chunk
-
 <<getting_help, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 vignette(package="proteinProfiles")
 \end_layout
 
 \begin_layout Chunk
-
 vignette("proteinProfiles")
 \end_layout
 
 \begin_layout Chunk
-
 ?profileDistance
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -169,22 +161,18 @@ file by omitting unnecessary data for our analysis at this point.
 \end_layout
 
 \begin_layout Chunk
-
 <<import_table>>=
 \end_layout
 
 \begin_layout Chunk
-
 file <- system.file("extdata", "ips_sample.csv", package="proteinProfiles")
 \end_layout
 
 \begin_layout Chunk
-
 x <- readProteinData(file)
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -202,32 +190,26 @@ x
 \end_layout
 
 \begin_layout Chunk
-
 <<inspect_import>>=
 \end_layout
 
 \begin_layout Chunk
-
 names(x)
 \end_layout
 
 \begin_layout Chunk
-
 dim(x$data)
 \end_layout
 
 \begin_layout Chunk
-
 names(x$annotation)
 \end_layout
 
 \begin_layout Chunk
-
 dim(x$annotation)
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -281,17 +263,14 @@ readProteinData
 \end_layout
 
 \begin_layout Chunk
-
 <<filter, fig=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
-
 y <- filterFeatures(x, 0.3, verbose=TRUE)
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -344,27 +323,22 @@ Protein.names
 \end_layout
 
 \begin_layout Chunk
-
 <<grep_anno_protein_name>>=
 \end_layout
 
 \begin_layout Chunk
-
 index1 <- grepAnnotation(x, "^28S")
 \end_layout
 
 \begin_layout Chunk
-
 length(index1)
 \end_layout
 
 \begin_layout Chunk
-
 index1
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -386,22 +360,18 @@ Ribosome
 \end_layout
 
 \begin_layout Chunk
-
 <<grep_anno_ribosome_kegg>>=
 \end_layout
 
 \begin_layout Chunk
-
 index2 <- grepAnnotation(x, "Ribosome", "KEGG")
 \end_layout
 
 \begin_layout Chunk
-
 length(index2)
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -459,42 +429,34 @@ Based on the results of step (1) and (2), a p-value
 \end_layout
 
 \begin_layout Chunk
-
 <<profile_1, fig=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
-
 z1 <- profileDistance(x, index1, nSample=1000)
 \end_layout
 
 \begin_layout Chunk
-
 z1$d0
 \end_layout
 
 \begin_layout Chunk
-
 z1$p.value
 \end_layout
 
 \begin_layout Chunk
-
 @in
 \end_layout
 
 \begin_layout Chunk
-
 <<profile_2, fig=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
-
 z2 <- profileDistance(x, index2, nSample=1000)
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -511,17 +473,14 @@ Session Info
 \end_layout
 
 \begin_layout Chunk
-
 <<sessionInfo, results=tex, echo=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 toLatex(sessionInfo(), locale=FALSE)
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
