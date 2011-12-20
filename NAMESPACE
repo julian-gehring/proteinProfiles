@@ -1,0 +1,8 @@
+importFrom(GSEABase, GeneSet, GeneSetCollection, geneIds)
+
+export(filterFeatures)
+export(readProteinData)
+export(grepAnnotation)
+export(profileDistance)
+export(geneSetAnnotation)
+export(geneSetCollectionAnnotation)
