@@ -31,6 +31,11 @@
 \author{Julian Gehring}
 
 \maketitle
+<<settings, echo=FALSE>>=
+set.seed(1)
+options(width=65)
+@
+
 
 \section{Introduction}
 
@@ -123,6 +128,21 @@ index2 <- grepAnnotation(x, "Ribosome", "KEGG")
 length(index2)
 @
 
+Groups of interest can also be imported from Molecular Signature Databases
+(MSigDB).
+
+<<geneset_annotation>>=
+library(GSEABase)
+
+c3sub <- system.file("extdata", "c3.all.v3.0.sym.4.gmt",
+	package="proteinProfiles")
+gsc <- getGmt(c3sub)
+gs <- gsc[[1]]
+
+index3 <- geneSetAnnotation(x, gs)
+length(index3)
+@
+
 
 \section{Computing profile distances and assessing significance}
 
@@ -146,11 +166,13 @@ group of interest.
 z1 <- profileDistance(x, index1, nSample=1000)
 z1$d0
 z1$p.value
-@in
+@
 <<profile_2, fig=TRUE>>=
 z2 <- profileDistance(x, index2, nSample=1000)
 @
-
+<<profile_3, fig=TRUE>>=
+z3 <- profileDistance(x, index3, nSample=1000)
+@
 
 \appendix
 

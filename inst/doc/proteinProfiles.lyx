@@ -92,6 +92,22 @@ proteinProfiles
 Julian Gehring
 \end_layout
 
+\begin_layout Chunk
+<<settings, echo=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+set.seed(1)
+\end_layout
+
+\begin_layout Chunk
+options(width=65)
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
 \begin_layout Section
 Introduction
 \end_layout
@@ -375,6 +391,55 @@ length(index2)
 @
 \end_layout
 
+\begin_layout Standard
+Groups of interest can also be imported from Molecular Signature Databases
+ (MSigDB).
+\end_layout
+
+\begin_layout Chunk
+<<geneset_annotation>>=
+\end_layout
+
+\begin_layout Chunk
+library(GSEABase)
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Chunk
+c3sub <- system.file("extdata", "c3.all.v3.0.sym.4.gmt",
+\end_layout
+
+\begin_layout Chunk
+	package="proteinProfiles")
+\end_layout
+
+\begin_layout Chunk
+gsc <- getGmt(c3sub)
+\end_layout
+
+\begin_layout Chunk
+gs <- gsc[[1]]
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Chunk
+index3 <- geneSetAnnotation(x, gs)
+\end_layout
+
+\begin_layout Chunk
+length(index3)
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
 \begin_layout Section
 Computing profile distances and assessing significance
 \end_layout
@@ -445,7 +510,7 @@ z1$p.value
 \end_layout
 
 \begin_layout Chunk
-@in
+@
 \end_layout
 
 \begin_layout Chunk
@@ -461,7 +526,15 @@ z2 <- profileDistance(x, index2, nSample=1000)
 \end_layout
 
 \begin_layout Chunk
+<<profile_3, fig=TRUE>>=
+\end_layout
 
+\begin_layout Chunk
+z3 <- profileDistance(x, index3, nSample=1000)
+\end_layout
+
+\begin_layout Chunk
+@
 \end_layout
 
 \begin_layout Section*
