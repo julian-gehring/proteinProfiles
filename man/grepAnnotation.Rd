@@ -12,7 +12,7 @@
 
 \usage{
 
-grepAnnotation(x, pattern, column="Protein.Names")
+grepAnnotation(x, pattern, column="Protein.Names", ignore.case=FALSE)
 
 geneSetAnnotation(x, geneSet, column="Gene.Names")
 
@@ -41,6 +41,10 @@ geneSetCollectionAnnotation(x, geneSetCollection, column="Gene.Names")
     names for \sQuote{grepAnnotation}); or "Gene.Names" matching against
     the gene names for \sQuote{geneSetAnnotation} and
     \sQuote{geneSetCollectionAnnotation}.}
+
+  \item{ignore.case}{Logical whether case sensitivity should be ignored
+    in string matching (default: FALSE).  For details, see
+    sQuote{ignore.case} for \sQuote{grep}.}
 
 }
 

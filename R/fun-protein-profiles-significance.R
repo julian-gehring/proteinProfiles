@@ -1,12 +1,12 @@
 ## compute the p-value associated with the distance in n-dim space ##
 
 ## functions ##
-readProteinData <- function(file, sep="\t") {
+readProteinData <- function(file, sep="\t", dataPattern="^Log2") {
 
   raw <- read.csv(file,
                   sep="\t", header=TRUE, stringsAsFactors=FALSE)
 
-  ldx <- grepl("^Log2", colnames(raw))
+  ldx <- grepl(dataPattern, colnames(raw))
   data <- as.matrix(raw[ ,ldx])
   rownames(data) <- raw$id
   annotation <- data.frame(raw[ ,!ldx])
@@ -41,9 +41,9 @@ filterFeatures <- function(x, theta, plot=TRUE, verbose=FALSE) {
 }
 
 
-grepAnnotation <- function(x, pattern, column="Protein.Names") {
+grepAnnotation <- function(x, pattern, column="Protein.Names", ignore.case=FALSE) {
 
-  index <- grep(pattern, x$annotation[[column]])
+  index <- grep(pattern, x$annotation[[column]], ignore.case=ignore.case)
 
   return(index)
 }
