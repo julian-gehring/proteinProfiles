@@ -39,9 +39,9 @@ profileDistance(x, index, nSample=10000, plot=TRUE, main="")
 \value{
   List with elements:
   \describe{
-    \item{$d0$}{Numeric with mean distance $d_{0}$ of profiles for the proteins of interest.}
-    \item{$1$}{Vector of numerics with mean distances $d_{1}$ of randomly selected groups of proteins.}
-    \item{$p$}{Numeric with p-value $p$.}
+    \item{d0}{Numeric with mean distance \eqn{$d_{0}$}{d_0} of profiles for the proteins of interest.}
+    \item{d1}{Vector of numerics with mean distances \eqn{$d_{1}$}{d_1} of randomly selected groups of proteins.}
+    \item{p}{Numeric with p-value \eqn{$p$}{p}.}
   }
 }
 
