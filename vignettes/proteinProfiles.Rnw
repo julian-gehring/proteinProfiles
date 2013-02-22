@@ -1,9 +1,8 @@
-%% LyX 2.0.1 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.0.5 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
-\documentclass[english,noae]{scrartcl}
+\documentclass[noae]{scrartcl}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{babel}
 \usepackage[unicode=true,pdfusetitle,
  bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
  breaklinks=true,pdfborder={0 0 0},backref=page,colorlinks=false]
@@ -80,6 +79,27 @@ dim(x$annotation)
 The import step is generally only required once for a data set. We
 can save the object \emph{x} in order to be able to skip this step
 for future analyzes.
+
+
+\section{Build the data structure from scratch}
+
+If you want to create your own data structure and not rely on the
+import data format, you can do this easily by hand.
+
+In order to do this, you will need:
+\begin{enumerate}
+\item The numeric values stored as a matrix, with n rows (proteins) and
+m columns (samples).
+\item A data frame with annotation columns, e.g. protein names, GO terms,
+with n rows (1 for each protein) and k description columns.
+\end{enumerate}
+<<build_data>>=
+data(ips_sample)
+str(ratios)
+str(annotation)
+x <- list(data=ratios, annotation=annotation)
+str(x)
+@
 
 
 \section{Removing features with missing data}

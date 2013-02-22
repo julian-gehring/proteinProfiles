@@ -89,18 +89,3 @@ profileDistance <- function(x, index, nSample=10000,
 
 
 .distance <- function(x) mean(dist(x), na.rm=TRUE)
-
-
-
-
-
-#gs.c3 <- getGmt("../genesets/c3.all.v3.0.symbols.gmt", collectionType=BroadCollection(category="c3"), geneIdType=SymbolIdentifier())
-
-#gs.c2 <- getGmt("../genesets/c2.cp.v3.0.symbols.gmt", collectionType=BroadCollection(category="c2"), geneIdType=SymbolIdentifier())
-
-
-#sapply(gs.c2, foo, gn)
-
-#foo <- function(gs, geneNames) {
-#  sum(geneNames %in% geneIds(gs))
-#}

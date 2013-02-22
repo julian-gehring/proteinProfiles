@@ -38,8 +38,7 @@ filterFeatures(x, theta, plot=TRUE, verbose=FALSE)
 
 \examples{
 
-file <- system.file("extdata", "ips_sample.csv", package="proteinProfiles")
-x <- readProteinData(file)
+example(ips_sample)
 
 y <- filterFeatures(x, 0.2, verbose=TRUE)
 

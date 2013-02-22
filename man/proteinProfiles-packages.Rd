@@ -26,8 +26,7 @@
 }
 
 \examples{
-file <- system.file("extdata", "ips_sample.csv", package="proteinProfiles")
-x <- readProteinData(file)
+example(ips_sample)
 index <- grepAnnotation(x, "^28S")
 z <- profileDistance(x, index)
 }

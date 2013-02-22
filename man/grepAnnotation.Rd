@@ -59,8 +59,7 @@ geneSetCollectionAnnotation(x, geneSetCollection, column="Gene.Names")
 
 \examples{
 
-file <- system.file("extdata", "ips_sample.csv", package="proteinProfiles")
-x <- readProteinData(file)
+example(ips_sample)
 
 index1 <- grepAnnotation(x, "^28S")
 

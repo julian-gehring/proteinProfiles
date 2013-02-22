@@ -239,6 +239,58 @@ x
 \end_layout
 
 \begin_layout Section
+Build the data structure from scratch
+\end_layout
+
+\begin_layout Standard
+If you want to create your own data structure and not rely on the import
+ data format, you can do this easily by hand.
+\end_layout
+
+\begin_layout Standard
+In order to do this, you will need:
+\end_layout
+
+\begin_layout Enumerate
+The numeric values stored as a matrix, with n rows (proteins) and m columns
+ (samples).
+\end_layout
+
+\begin_layout Enumerate
+A data frame with annotation columns, e.g.
+ protein names, GO terms, with n rows (1 for each protein) and k description
+ columns.
+\end_layout
+
+\begin_layout Chunk
+<<build_data>>=
+\end_layout
+
+\begin_layout Chunk
+data(ips_sample)
+\end_layout
+
+\begin_layout Chunk
+str(ratios)
+\end_layout
+
+\begin_layout Chunk
+str(annotation)
+\end_layout
+
+\begin_layout Chunk
+x <- list(data=ratios, annotation=annotation)
+\end_layout
+
+\begin_layout Chunk
+str(x)
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Section
 Removing features with missing data
 \end_layout
 
