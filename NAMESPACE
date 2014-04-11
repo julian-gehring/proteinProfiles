@@ -1,0 +1,7 @@
+import(graphics)
+import(stats)
+
+export(filterFeatures)
+export(grepAnnotation)
+export(profileDistance)
+export(plotProfileDistance)

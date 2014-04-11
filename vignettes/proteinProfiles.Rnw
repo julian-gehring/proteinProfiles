@@ -1,0 +1,203 @@
+%% LyX 2.0.5 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass{scrartcl}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[authoryear]{natbib}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=true,pdfborder={0 0 0},backref=page,colorlinks=false]
+ {hyperref}
+\usepackage{breakurl}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+%\VignetteIndexEntry{The proteinProfiles package}
+%\VignettePackage{proteinProfiles}
+
+\usepackage[english]{babel}
+
+\makeatother
+
+\begin{document}
+
+\title{The\emph{ proteinProfiles} package}
+
+
+\author{Julian Gehring}
+
+\maketitle
+<<settings, echo=FALSE>>=
+set.seed(1)
+options(width=65)
+@
+
+
+\section{Introduction}
+
+
+\subsection{Motivation and method}
+
+In current high-throughput proteomics, it is feasible to assess the
+abundance of a large number of proteins in one measurement. In case
+these measurements correspond to different time points, it is often
+of interest to identify groups of proteins showing similar time courses. 
+
+The \emph{proteinProfiles} package offers the functionality to
+\begin{enumerate}
+\item Define protein groups of interest based on matching text annotation.
+\item Compute similarity (distance) measures of time courses for a set of
+proteins.
+\item Assess the significance of the similarity in terms of p-values in
+relation to randomly permuted sets.
+\end{enumerate}
+A detailed use case for this method is described in \citet{hansson_highly_2012}.
+
+
+\subsection{About the package}
+
+To use the functions and the data described in this document, you
+have to load the package first:
+
+<<load_package>>=
+library(proteinProfiles)
+@
+
+If you have not installed the package so far, you can do this in the
+same way as for any other bioconductor package (see also \href{http://bioconductor.org/install/ }{http://bioconductor.org/install/ }for
+details):
+
+<<install_package, eval=FALSE>>=
+source("http://bioconductor.org/biocLite.R")
+biocLite("proteinProfiles")
+@
+
+You can get more information about the package in general and specific
+function (e.g. the \emph{profileDistance} function) with:
+
+<<getting_help, eval=FALSE>>=
+vignette(package="proteinProfiles")
+vignette("proteinProfiles")
+?profileDistance
+@
+
+
+\section{Data import and structure}
+
+For illustrating a typical workflow, we will use an example data set
+which mimics the data used in \citet{hansson_highly_2012}.
+
+<<load_dataset>>=
+data(ips_sample)
+ls()
+@
+
+For the analysis, you need first the abundance measurements for the
+proteins over time. These can be absolute or relative values, and
+can optionally include replicates. The data is stored as a numeric
+matrix, with rows corresponding to proteins and columns to time points/replicates.
+
+<<explore_ratios>>=
+head(ratios)
+@
+
+Further, you have to provide a data frame with annotation data associated
+with proteins. This can include multiple annotation columns, as shown
+in the example data set.
+
+<<explore_annotation>>=
+colnames(annotation)
+@
+
+The matching of the annotation to the measurements relies on a custom
+identifier which is stored as row names in both \emph{ratios} and
+\emph{annotation.}
+
+
+\section{Removing features with missing data}
+
+Not for all data points the measurement was successful and hence contains
+missing data (\emph{NA}). Since computing the distances of profiles
+with several data points missing may be unreliable, you can optionally
+remove protein measurements with the fraction of missing data points
+exceeding a user-defined threshold. A threshold of e.g. 0.3 will remove
+all features with more than 30\% of the data points missing.
+
+<<remove_na>>=
+ratios_filtered <- filterFeatures(ratios, 0.3, verbose=TRUE)
+@
+
+
+\section{Defining protein group of interest based on annotation}
+
+Based on the annotation provided in the original data set, a group
+of proteins of interest can be obtained. The \texttt{grepAnnotation}
+function matches substrings (regular expressions) against a column
+of the annotation object and returns the matching protein identifiers.
+Here, we search for all protein names starting with the string \emph{``28S''}.
+For details, read the documentation of the \emph{grep} function.
+
+<<grep_anno_protein_name>>=
+names(annotation)
+index_28S <- grepAnnotation(annotation, pattern="^28S", column="Protein.Name")
+index_28S
+@
+
+We can also use other columns of the annotation. Here, we search for
+all proteins associated with the term \emph{``Ribosome''} in the
+annotation column, taken from the KEGG database.
+
+<<grep_anno_ribosome_kegg>>=
+index_ribosome <- grepAnnotation(annotation, "Ribosome", "KEGG")
+index_ribosome
+@
+
+
+\section{Computing profile distances and assessing significance}
+
+The \texttt{profileDistance} function constitutes the core part of
+the analysis.
+\begin{enumerate}
+\item It computes the mean euclidean distance $d_{0}$ of the profiles for
+the proteins of interest defined by \emph{index}. This distance is
+shown as a red vertical line in the plot.
+\item It performs step (1) for a number \emph{nSample} of randomly selected
+groups with the same size as our group of interest. The distances
+are shown as a cumulative distribution in the plot.
+\item Based on the results of step (1) and (2), a p-value $p$ given by
+the cumulative density at $d_{0}$ (which is equivalent to the area
+under the probability density in the range $[-\infty,d_{0}]$) is
+computed. It indicates the probability of observing a group of proteins
+by chance with profiles having the same or a smaller distance as our
+group of interest.
+\end{enumerate}
+<<profile_1, fig=TRUE>>=
+z1 <- profileDistance(ratios, index_28S)
+z1$d0
+z1$p.value
+plotProfileDistance(z1)
+@
+<<profile_2, fig=TRUE>>=
+z2 <- profileDistance(ratios, index_ribosome, nSample=2000)
+plotProfileDistance(z2)
+@
+
+\appendix
+
+\section*{\newpage{}\bibliographystyle{plain}
+\bibliography{proteinProfiles-references}
+}
+
+
+\section*{Session Info}
+
+<<sessionInfo, results=tex, echo=FALSE>>=
+toLatex(sessionInfo(), locale=FALSE)
+@
+
+\end{document}
