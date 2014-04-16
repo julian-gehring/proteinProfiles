@@ -1,8 +1,9 @@
 %% LyX 2.0.5 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
-\documentclass[noae]{scrartcl}
+\documentclass{scrartcl}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage[authoryear]{natbib}
 \usepackage[unicode=true,pdfusetitle,
  bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
  breaklinks=true,pdfborder={0 0 0},backref=page,colorlinks=false]
@@ -16,15 +17,16 @@
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
-%\VignetteIndexEntry{Introduction to the proteinProfiles package}
+%\VignetteIndexEntry{The proteinProfiles package}
 %\VignettePackage{proteinProfiles}
+
+\usepackage[english]{babel}
 
 \makeatother
 
 \begin{document}
 
-\title{Introduction to the\emph{}\\
-\emph{proteinProfiles} package}
+\title{The\emph{ proteinProfiles} package}
 
 
 \author{Julian Gehring}
@@ -38,13 +40,45 @@ options(width=65)
 
 \section{Introduction}
 
-Loading the package
+
+\subsection{Motivation and method}
+
+In current high-throughput proteomics, it is feasible to assess the
+abundance of a large number of proteins in one measurement. In case
+these measurements correspond to different time points, it is often
+of interest to identify groups of proteins showing similar time courses. 
+
+The \emph{proteinProfiles} package offers the functionality to
+\begin{enumerate}
+\item Define protein groups of interest based on matching text annotation.
+\item Compute similarity (distance) measures of time courses for a set of
+proteins.
+\item Assess the significance of the similarity in terms of p-values in
+relation to randomly permuted sets.
+\end{enumerate}
+A detailed use case for this method is described in \citet{hansson_highly_2012}.
+
+
+\subsection{About the package}
+
+To use the functions and the data described in this document, you
+have to load the package first:
 
 <<load_package>>=
 library(proteinProfiles)
 @
 
-Getting help
+If you have not installed the package so far, you can do this in the
+same way as for any other bioconductor package (see also \href{http://bioconductor.org/install/ }{http://bioconductor.org/install/ }for
+details):
+
+<<install_package, eval=FALSE>>=
+source("http://bioconductor.org/biocLite.R")
+biocLite("proteinProfiles")
+@
+
+You can get more information about the package in general and specific
+function (e.g. the \emph{profileDistance} function) with:
 
 <<getting_help, eval=FALSE>>=
 vignette(package="proteinProfiles")
@@ -53,114 +87,74 @@ vignette("proteinProfiles")
 @
 
 
-\section{Importing data}
+\section{Data import and structure}
 
-As a first step, we import the experimental data with the \texttt{readProteinData}
-function. In this case, we import it from a tab-delimited text file
-\emph{iPS\_proteomics\_slim\_cut.csv }which was derived from the original
-\texttt{.xlsx}\texttt{\emph{ }}file by omitting unnecessary data for
-our analysis at this point.
+For illustrating a typical workflow, we will use an example data set
+which mimics the data used in \citet{hansson_highly_2012}.
 
-<<import_table>>=
-file <- system.file("extdata", "ips_sample.csv", package="proteinProfiles")
-x <- readProteinData(file)
-@
-
-The resulting object \emph{x} contains both the $\log_{2}$ ratios
-of all replicates as well as the annotation associated with the proteins.
-
-<<inspect_import>>=
-names(x)
-dim(x$data)
-names(x$annotation)
-dim(x$annotation)
-@
-
-The import step is generally only required once for a data set. We
-can save the object \emph{x} in order to be able to skip this step
-for future analyzes.
-
-
-\section{Build the data structure from scratch}
-
-If you want to create your own data structure and not rely on the
-import data format, you can do this easily by hand.
-
-In order to do this, you will need:
-\begin{enumerate}
-\item The numeric values stored as a matrix, with n rows (proteins) and
-m columns (samples).
-\item A data frame with annotation columns, e.g. protein names, GO terms,
-with n rows (1 for each protein) and k description columns.
-\end{enumerate}
-<<build_data>>=
+<<load_dataset>>=
 data(ips_sample)
-str(ratios)
-str(annotation)
-x <- list(data=ratios, annotation=annotation)
-str(x)
+ls()
 @
+
+For the analysis, you need first the abundance measurements for the
+proteins over time. These can be absolute or relative values, and
+can optionally include replicates. The data is stored as a numeric
+matrix, with rows corresponding to proteins and columns to time points/replicates.
+
+<<explore_ratios>>=
+head(ratios)
+@
+
+Further, you have to provide a data frame with annotation data associated
+with proteins. This can include multiple annotation columns, as shown
+in the example data set.
+
+<<explore_annotation>>=
+colnames(annotation)
+@
+
+The matching of the annotation to the measurements relies on a custom
+identifier which is stored as row names in both \emph{ratios} and
+\emph{annotation.}
 
 
 \section{Removing features with missing data}
 
-Since computing the distances of profiles with several data points
-missing may be unreliable, we can filter our data set and remove proteins
-with the fraction of missing data points exceeding a user-defined
-threshold $\Theta$. A threshold of e.g. $\Theta=0.3$ would remove
-all features with more than 30\% of the data points missing. The diagnostic
-plot shows the distribution of missing data points per feature and
-also indicates the value for $\Theta$ chosen in the filtering.
+Not for all data points the measurement was successful and hence contains
+missing data (\emph{NA}). Since computing the distances of profiles
+with several data points missing may be unreliable, you can optionally
+remove protein measurements with the fraction of missing data points
+exceeding a user-defined threshold. A threshold of e.g. 0.3 will remove
+all features with more than 30\% of the data points missing.
 
-This step is optional and subsequent analysis steps can be computed
-with the output of \texttt{readProteinData} instead of the \texttt{readProteinData}
-function.
-
-<<filter, fig=TRUE>>=
-y <- filterFeatures(x, 0.3, verbose=TRUE)
+<<remove_na>>=
+ratios_filtered <- filterFeatures(ratios, 0.3, verbose=TRUE)
 @
 
 
 \section{Defining protein group of interest based on annotation}
 
-Based on the annotation provided in the original data set a group
+Based on the annotation provided in the original data set, a group
 of proteins of interest can be obtained. The \texttt{grepAnnotation}
 function matches substrings (regular expressions) against a column
-of the annotation contained in \emph{x} and returns the row indices
-of the proteins of interest in the data set.
-
-By default, the pattern is matched against the protein names (column
-\emph{``Protein.names''}). Here, we search for all protein names
-starting with the string \emph{``28S''}.
+of the annotation object and returns the matching protein identifiers.
+Here, we search for all protein names starting with the string \emph{``28S''}.
+For details, read the documentation of the \emph{grep} function.
 
 <<grep_anno_protein_name>>=
-index1 <- grepAnnotation(x, "^28S")
-length(index1)
-index1
+names(annotation)
+index_28S <- grepAnnotation(annotation, pattern="^28S", column="Protein.Name")
+index_28S
 @
 
-We can also search other columns of the annotation. Here, we search
-for all proteins associated with the term \emph{``Ribosome''} in
-the annotation taken from the KEGG database.
+We can also use other columns of the annotation. Here, we search for
+all proteins associated with the term \emph{``Ribosome''} in the
+annotation column, taken from the KEGG database.
 
 <<grep_anno_ribosome_kegg>>=
-index2 <- grepAnnotation(x, "Ribosome", "KEGG")
-length(index2)
-@
-
-Groups of interest can also be imported from Molecular Signature Databases
-(MSigDB).
-
-<<geneset_annotation>>=
-library(GSEABase)
-
-c3sub <- system.file("extdata", "c3.all.v3.0.sym.4.gmt",
-	package="proteinProfiles")
-gsc <- getGmt(c3sub)
-gs <- gsc[[1]]
-
-index3 <- geneSetAnnotation(x, gs)
-length(index3)
+index_ribosome <- grepAnnotation(annotation, "Ribosome", "KEGG")
+index_ribosome
 @
 
 
@@ -183,20 +177,24 @@ by chance with profiles having the same or a smaller distance as our
 group of interest.
 \end{enumerate}
 <<profile_1, fig=TRUE>>=
-z1 <- profileDistance(x, index1, nSample=1000)
+z1 <- profileDistance(ratios, index_28S)
 z1$d0
 z1$p.value
+plotProfileDistance(z1)
 @
 <<profile_2, fig=TRUE>>=
-z2 <- profileDistance(x, index2, nSample=1000)
-@
-<<profile_3, fig=TRUE>>=
-z3 <- profileDistance(x, index3, nSample=1000)
+z2 <- profileDistance(ratios, index_ribosome, nSample=2000)
+plotProfileDistance(z2)
 @
 
 \appendix
 
-\section*{\newpage{}Session Info}
+\section*{\newpage{}\bibliographystyle{plain}
+\bibliography{proteinProfiles-references}
+}
+
+
+\section*{Session Info}
 
 <<sessionInfo, results=tex, echo=FALSE>>=
 toLatex(sessionInfo(), locale=FALSE)

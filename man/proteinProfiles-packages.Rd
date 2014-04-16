@@ -16,19 +16,13 @@
 }
 
 \author{
-  Julian Gehring, Wolfgang Huber
+  Julian Gehring
 
   Maintainer: Julian Gehring <julian.gehring@embl.de>
 }
 
 \seealso{
-  filterFeatures, grepAnnotation, profileDistance, readProteinData
-}
-
-\examples{
-example(ips_sample)
-index <- grepAnnotation(x, "^28S")
-z <- profileDistance(x, index)
+  filterFeatures, grepAnnotation, profileDistance, plotProfileDistance
 }
 
 \keyword{package}

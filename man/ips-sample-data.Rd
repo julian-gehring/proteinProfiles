@@ -17,8 +17,8 @@
   \describe{
     \item{ratios}{Matrix with protein profiles.  Rows correspond to
 	  proteins, columns to samples.}
-    \item{annotation}{Data frame with annotation columns, with rows
-  matching those of \sQuote{ratios.}}
+    \item{annotation}{Data frame with annotation columns, with row names
+	  matching those of \sQuote{ratios.}}
   }
 }
 
@@ -27,7 +27,10 @@
 
 \examples{
   data(ips_sample)
-  x =list(data=ratios, annotation=annotation)
+
+  str(ratios)
+
+  str(annotation)
 }
 
 

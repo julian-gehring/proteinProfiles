@@ -4,42 +4,44 @@
 
 \title{filterFeatures}
 
-\description{Filter out protein exceeding a certain fraction of missing
+\description{Filter out proteins exceeding a certain fraction of missing
   data points.
 }
 
 \usage{
 
-filterFeatures(x, theta, plot=TRUE, verbose=FALSE)
+filterFeatures(values, maxNAfraction, verbose=FALSE, plot=FALSE, ...)
 
 }
 
 \arguments{
   
-  \item{x}{List containing the data to analyze, as returned from the
-    \sQuote{readRatios} function.}
+  \item{values}{Numeric matrix containing the data to analyze.}
   
-  \item{theta}{Threshold $\\Theta$ specifying the fraction of data points
-    in order to keep a protein.}
-  
-  \item{plot}{Logical whether to plot a diagnostic plot showing
-    distribution of the fraction of missing data points associated with
-    the proteins (default: TRUE).}
+  \item{maxNAfraction}{Numeric threshold specifying the maximum fraction
+	of data points that can be missing (\sQuote{NA}) to still keep the
+	protein.}
 
-  \item{verbose}{Logical, whether to print the number of proteins before
+  \item{verbose}{Logical indicating whether to print the number of proteins before
     and after filtering (default: FALSE).}
+
+  \item{plot}{Logical indicationg whether to plot a diagnostic plot showing the
+    distribution of the fraction of missing data points associated with
+    the proteins (default: FALSE).}
+
+  \item{...}{Arguments passed to the '\sQuote{plot}' method.}
 
 }
 
 \value{
-  List with the same structure as \sQuote{x}, with elements not matching
-  the filter criteria removed.
+  Numeric matrix with the same structure as \sQuote{values},
+  with elements not matching the filter criteria removed.
 }
 
 \examples{
 
-example(ips_sample)
+data(ips_sample)
 
-y <- filterFeatures(x, 0.2, verbose=TRUE)
+ratios_filtered <- filterFeatures(ratios, 0.2, verbose=TRUE)
 
 }

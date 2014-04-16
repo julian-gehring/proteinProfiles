@@ -1,38 +1,41 @@
 \name{profileDistance}
 
 \alias{profileDistance}
+\alias{plotProfileDistance}
 
 \title{profileDistance}
 
-\description{Compute mean euclidean distance between a protein group of
+\description{Compute distance between a protein group of
   interest and assess its significance by comparing it to the distances
   of randomly selected groups of proteins.}
 
 \usage{
 
-profileDistance(x, index, nSample=10000, plot=TRUE, main="")
+profileDistance(values, index, nSample=1000, seed)
+
+plotProfileDistance(z, ...)
 
 }
 
 \arguments{
   
-  \item{x}{List containing the data to analyze, as returned from the
-    \sQuote{readRatios} or \sQuote{filterRatios} function.}
+  \item{values}{Numeric matrix containing the protein data to analyze.}
   
-  \item{index}{Vector of integers with the indices for the protein group
-    of interest in the data set \sQuote{x}, as returned from
+  \item{index}{Protein identifiers for the protein group
+    of interest in the data set \sQuote{values}, as returned from
     \sQuote{grepAnnotation} or an equivalent function.}
   
   \item{nSample}{Integer specifying the number of randomly selected
     groups of proteins with the same number of elements as specified by
     \sQuote{index}, serving as a reference for the significance
-    assessment (default: 10000).}
-  
-  \item{plot}{Logical whether to plot the distribution of distances
-    (default: TRUE).}
+    assessment (default: 1000).}
 
-  \item{main}{Character string, specifying the title for the plot
-    (default: \"\").}
+  \item{seed}{Random seed, relevant for the permutation step. For
+	details, see the \sQuote{seed} function.}
+
+  \item{z}{Return object from \sQuote{profileDistance.}}
+
+  \item{...}{Optional arguments passed to the \sQuote{plot} function.}
   
 }
 
@@ -47,10 +50,14 @@ profileDistance(x, index, nSample=10000, plot=TRUE, main="")
 
 \examples{
 
-example(ips_sample)
+data(ips_sample)
 
-index <- grepAnnotation(x, "^28S")
+index_28S <- grepAnnotation(annotation, pattern="^28S",
+column="Protein.Name")
 
-z <- profileDistance(x, index)
+z <- profileDistance(ratios, index_28S)
 
+z$p.value
+
+plotProfileDistance(z)
 }

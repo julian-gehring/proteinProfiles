@@ -1,91 +1,86 @@
 ## compute the p-value associated with the distance in n-dim space ##
 
 ## functions ##
-readProteinData <- function(file, sep="\t", dataPattern="^Log2") {
 
-  raw <- read.csv(file,
-                  sep="\t", header=TRUE, stringsAsFactors=FALSE)
+filterFeatures <- function(values, maxNAfraction, verbose=FALSE, plot=FALSE, ...) {
 
-  ldx <- grepl(dataPattern, colnames(raw))
-  data <- as.matrix(raw[ ,ldx])
-  rownames(data) <- raw$id
-  annotation <- data.frame(raw[ ,!ldx])
-
-  return(list(data=data, annotation=annotation))
-}
-
-
-filterFeatures <- function(x, theta, plot=TRUE, verbose=FALSE) {
-
-  nNa <- apply(x$data, 1, function(x) sum(is.na(x)))/ncol(x$data)
+  fNA <- apply(values, 1, function(x) {sum(is.na(x))})/ncol(values)
 
   if(plot) {
-    plot(ecdf(nNa), xlim=c(0, 1),
+    plot(ecdf(fNA), xlim=c(0, 1),
          xlab="Fraction of missing data points per feature",
          ylab="Cumulative density",
-         main="Diagnostic plot for filtering of missing data points")
-    abline(v=theta)
+         main="Diagnostic plot for filtering of missing data points",
+         ...)
+    abline(v=maxNAfraction)
   }
 
-  ldx <- nNa <= theta  ## remove features with more than 'theta' missing
-  x$data <- x$data[ldx, ]
-  x$annotation <- x$annotation[ldx, ]
-  x$theta <- theta
+  ## remove features with more than 'max_na_fraction' missing
+  ldx <- fNA <= maxNAfraction
+  values <- values[ldx, ,drop=FALSE]
 
   if(verbose) {
-    print(paste("Before filtering:", length(nNa)))
-    print(paste("After filtering:", nrow(x$data)))
+    print(paste("Before filtering:", length(fNA)))
+    print(paste("After filtering:", nrow(values)))
   }
 
-  return(x)
+  if(nrow(values) == 0)
+    warning("No values left.")
+
+  return(values)
 }
 
 
-grepAnnotation <- function(x, pattern, column="Protein.Names", ignore.case=FALSE) {
+grepAnnotation <- function(anno, pattern, column, ...) {
 
-  index <- grep(pattern, x$annotation[[column]], ignore.case=ignore.case)
+  ## check for one match in colunm names
+  if(sum(column %in% colnames(anno)) != 1)
+    stop(sprintf("Column name '%s' must have exactly one match the annotation.", column))
+
+  sub_anno = anno[[column]]
+  ids = rownames(anno)
+  index <- ids[grep(pattern, sub_anno, ...)]
+
+  if(length(index) == 0)
+    warning(sprintf("No matches for pattern '%s' in the annotation.", pattern))
 
   return(index)
 }
 
 
-geneSetAnnotation <- function(x, geneSet, column="Gene.Names") {
+profileDistance <- function(values, index, nSample=1000,
+                            seed) {
 
-  index <- which(toupper(x$annotation[[column]]) %in% toupper(geneIds(geneSet)))
+  ## set a user defined seed
+  if(!missing(seed))
+    set.seed(seed)
 
-  return(index)
-}
+  idx = which(rownames(values) %in% index)
+  if(length(idx) == 0)
+    stop("Indices do not match any protein identifier.")
 
-
-geneSetCollectionAnnotation <- function(x, geneSetCollection, column="Gene.Names") {
-
-  l <- lapply(geneSetCollection, geneSetAnnotation, x=x, column=column)
-
-  return(l)
-}
-
-
-profileDistance <- function(x, index, nSample=10000,
-                            plot=TRUE, main="") {
-
-  d0 <- .distance(x$data[index, ])
-  d1 <- replicate(nSample, .distance(x$data[sample.int(nrow(x$data), length(index)), ]))
+  d0 <- .distance(values[idx, ])
+  d1 <- replicate(nSample, .distance(values[sample.int(nrow(values), length(idx)), ]))
   d1 <- d1[!is.nan(d1)]
+  if(length(d1) == 0)
+    stop("Permutation only yields invalid distances.")
   
   p <- sum(d1 <= d0)/length(d1)
-
-  if(plot) {
-    r <- range(d1)
-    plot(ecdf(d1), do.points=FALSE,
-         xlim=c(min(r[1], d0), max(r[2], d0)),
-         xlab="Distance", ylab="Cumulative Density", main=main)
-    abline(v=d0, col=2)
-    axis(4, p, paste("p =", round(p, 2)))
-    text(d0, 1, paste(" d0 =", round(d0, 2)), adj=c(0, 0))
-  }
 
   return(list(d0=d0, d1=d1, p.value=p))
 }
 
 
-.distance <- function(x) mean(dist(x), na.rm=TRUE)
+plotProfileDistance <- function(z, ...) {
+
+  r <- range(z$d1)
+  plot(ecdf(z$d1), do.points=FALSE,
+       xlim=c(min(r[1], z$d0), max(r[2], z$d0)),
+       xlab="Distance", ylab="Cumulative Density", ...)
+  abline(v=z$d0, col=2)
+  axis(4, z$p, paste("p =", round(z$p, 2)))
+  text(z$d0, 1, paste(" d0 =", round(z$d0, 2)), adj=c(0, 0))
+}
+
+
+.distance <- function(values) mean(dist(values), na.rm=TRUE)

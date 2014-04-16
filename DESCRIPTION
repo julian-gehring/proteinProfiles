@@ -1,14 +1,15 @@
 Package: proteinProfiles
 Type: Package
 Title: Protein Profiling
-Version: 0.2.2
-Date: 2013-02-22
+Version: 1.5.0
+Date: 2013-09-24
 Author: Julian Gehring
 Maintainer: Julian Gehring <julian.gehring@embl.de>
-Imports: GSEABase
-Depends: R (>= 2.15.0)
+Imports: graphics, stats
+Depends: R (>= 2.15.2)
+Suggests: testthat
 Description: Significance assessment for distance measures of time-course
 	     protein profiles
 License: GPL-3
 LazyLoad: yes
-Encoding: UTF-8
+BiocViews: Annotation, Proteomics, TimeCourse, Clustering
