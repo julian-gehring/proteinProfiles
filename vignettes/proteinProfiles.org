@@ -1,0 +1,230 @@
+The proteinProfiles package
+
+#+AUTHOR: Julian Gehring
+
+#+PROPERTY: session *R-devel*
+#+PROPERTY: exports both
+#+PROPERTY: results output
+#+LANGUAGE: en
+#+OPTIONS: H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS: TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+
+* Setup                                                            :noexport:
+
+
+
+
+#+BEGIN_SRC R :exports none
+  set.seed(1)
+  options(width=65)
+#+END_SRC
+
+
+* Introduction
+
+
+** Motivation and method
+
+In current high-throughput proteomics, it is feasible to assess the
+abundance of a large number of proteins in one measurement. In case
+these measurements correspond to different time points, it is often
+of interest to identify groups of proteins showing similar time courses.
+
+
+The /proteinProfiles/ package offers the functionality to
+
+- Define protein groups of interest based on matching text annotation.
+- Compute similarity (distance) measures of time courses for a set of
+proteins.
+- Assess the significance of the similarity in terms of p-values in
+relation to randomly permuted sets.
+
+
+A detailed use case for this method is described in REF.
+
+
+** About the package
+
+To use the functions and the data described in this document, you
+have to load the package first:
+
+#+BEGIN_SRC R :exports code
+  library(proteinProfiles)
+#+END_SRC
+
+If you have not installed the package so far, you can do this in the
+same way as for any other bioconductor package (see also
+http://bioconductor.org/install/ for details):
+
+#+BEGIN_SRC R :exports code :eval no
+  source("http://bioconductor.org/biocLite.R")
+  biocLite("proteinProfiles")
+#+END_SRC
+
+
+You can get more information about the package in general and specific
+function (e.g. the /profileDistance/ function) with:
+
+#+BEGIN_SRC R :exports code :evel no
+  vignette(package="proteinProfiles")
+  vignette("proteinProfiles")
+  ?profileDistance
+#+END_SRC
+
+
+* Data import and structure
+
+For illustrating a typical workflow, we will use an example data set
+which mimics the data used in REF.
+
+#+NAME: load_datasets
+#+BEGIN_SRC R
+  data(ips_sample)
+  ls()
+#+END_SRC
+
+
+For the analysis, you need first the abundance measurements for the
+proteins over time. These can be absolute or relative values, and
+can optionally include replicates. The data is stored as a numeric
+matrix, with rows corresponding to proteins and columns to time points/replicates.
+
+#+NAME: explore_ratios
+#+BEGIN_SRC R
+  head(ratios)
+#+END_SRC
+
+
+Further, you have to provide a data frame with annotation data associated
+with proteins. This can include multiple annotation columns, as shown
+in the example data set.
+
+#+NAME: explore_annotation
+#+BEGIN_SRC R
+  colnames(annotation)
+#+END_SRC
+
+The matching of the annotation to the measurements relies on a custom
+identifier which is stored as row names in both /ratios/ and
+/annotation./
+
+
+* Removing features with missing data
+
+Not for all data points the measurement was successful and hence contains
+missing data (/NA/). Since computing the distances of profiles
+with several data points missing may be unreliable, you can optionally
+remove protein measurements with the fraction of missing data points
+exceeding a user-defined threshold. A threshold of e.g. 0.3 will remove
+all features with more than 30\% of the data points missing.
+
+#+NAME: remove_na
+#+BEGIN_SRC R
+  ratios_filtered <- filterFeatures(ratios, 0.3, verbose=TRUE)
+#+END_SRC
+
+
+* Defining protein group of interest based on annotation
+
+Based on the annotation provided in the original data set, a group
+of proteins of interest can be obtained. The /grepAnnotation/
+function matches substrings (regular expressions) against a column
+of the annotation object and returns the matching protein identifiers.
+Here, we search for all protein names starting with the string /``28S''/.
+For details, read the documentation of the /grep/ function.
+
+#+NAME: grep_anno_protein_name
+#+BEGIN_SRC R
+  names(annotation)
+  index_28S <- grepAnnotation(annotation, pattern="^28S", column="Protein.Name")
+  index_28S
+#+END_SRC
+
+
+We can also use other columns of the annotation. Here, we search for
+all proteins associated with the term /``Ribosome''/ in the
+annotation column, taken from the KEGG database.
+
+
+#+NAME: grep_anno_ribosome_kegg
+#+BEGIN_SRC R
+  index_ribosome <- grepAnnotation(annotation, "Ribosome", "KEGG")
+  index_ribosome
+#+END_SRC
+
+
+* Computing profile distances and assessing significance
+
+The /profileDistance/ function constitutes the core part of
+the analysis.
+
+1. It computes the mean euclidean distance of the profiles for the proteins of
+   interest defined by /index/. This distance is shown as a red vertical line in
+   the plot.
+
+2. It performs step (1) for a number /nSample/ of randomly selected groups with
+   the same size as our group of interest. The distances are shown as a
+   cumulative distribution in the plot.
+
+3. Based on the results of step (1) and (2), a p-value given by the cumulative
+   density at (which is equivalent to the area under the probability density in
+   the range is computed. It indicates the probability of observing a group of
+   proteins by chance with profiles having the same or a smaller distance as
+   our group of interest.
+
+
+#+NAME: profile_1
+#+BEGIN_SRC R :results output graphics :file out.pdf
+  z1 <- profileDistance(ratios, index_28S)
+  z1$d0
+  z1$p.value
+  plotProfileDistance(z1)
+#+END_SRC
+
+#+NAME: profile_2
+#+BEGIN_SRC R :results output graphics :file out2.pdf
+  z2 <- profileDistance(ratios, index_ribosome, nSample=2000)
+  plotProfileDistance(z2)
+#+END_SRC
+
+#+aigne\bibliography{proteinProfiles-references}
+
+
+* Session Info
+
+#+NAME: session_info
+#+BEGIN_SRC R
+  sessionInfo()
+#+END_SRC
+
+
+* Rest                                                             :noexport:
+
+#+BEGIN_EXAMPLE
+\documentclass{scrartcl}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[authoryear]{natbib}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=true,pdfborder={0 0 0},backref=page,colorlinks=false]
+ {hyperref}
+\usepackage{breakurl}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+%\VignetteIndexEntry{The proteinProfiles package}
+%\VignettePackage{proteinProfiles}
+
+\usepackage[english]{babel}
+
+\makeatother
+
+\begin{document}
+#+END_EXAMPLE
